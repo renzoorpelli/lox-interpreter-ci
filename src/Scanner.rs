@@ -30,6 +30,8 @@ impl Scanner {
     fn is_at_the_end(&self) -> bool {
         self.current >= self.source.len()
     }
+
+    /// this method will scan the source code and return all the tokens
     pub fn get_tokens(&mut self) -> Vec<Token> {
         while !self.is_at_the_end() {
             self.start = self.current;
@@ -59,8 +61,4 @@ impl Scanner {
         ));
     }
     fn scan_token(&mut self) {}
-}
-
-fn parse_line(scanner: &mut Scanner, line: &str) -> io::Result<()> {
-    Ok(())
 }
