@@ -1,6 +1,6 @@
 // Scanning Part one
 use std::io;
-use std::io::{Write};
+use std::io::Write;
 use std::path::Path;
 
 // Core interpreter functionality
@@ -10,13 +10,11 @@ impl Lox {
     fn new() -> Self {
         Lox {}
     }
-
     /// Core execution method
     pub fn run(&mut self, source: &str) -> Result<(), String> {
         Ok(())
     }
 }
-
 fn run_file<P: AsRef<Path>>(lox: &mut Lox, path: P) -> io::Result<()> {
     let content = std::fs::read_to_string(path);
     for line in content?.lines() {
@@ -45,13 +43,11 @@ fn run_prompt(lox: &mut Lox) -> io::Result<()> {
             eprintln!("Error {}", e);
         }
     }
-
     Ok(())
 }
 
 fn main() -> io::Result<()> {
     let mut lox = Lox::new();
-
     let args: Vec<String> = std::env::args().collect();
 
     match args.len() {
