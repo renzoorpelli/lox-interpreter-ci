@@ -44,16 +44,20 @@ impl Scanner {
         self.tokens.clone()
     }
 
-    fn add_token(&mut self, kind: TokenKind) {
-        let value = &self.source[self.start..self.current].to_string();
+    fn add_token(&mut self, kind: TokenKind, value: Option<String>) {
+        let lexeme = match value {
+            Some(value) => value,
+            None => self.source[self.start..self.current].to_string(),
+        };
         self.tokens
-            .push(Token::new(value.to_string(), kind, self.line, self.column));
+            .push(Token::new(lexeme, kind, self.line, self.column));
     }
+
     fn scan_token(&mut self) {
         match self.move_next() {
-            '+' => self.add_token(TokenKind::Plus),
-            '-' => self.add_token(TokenKind::Minus),
-            '*' => self.add_token(TokenKind::Star),
+            '+' => self.add_token(TokenKind::Plus, None),
+            '-' => self.add_token(TokenKind::Minus, None),
+            '*' => self.add_token(TokenKind::Star, None),
             '/' => match self.peek_match('/') {
                 true => {
                     //  A comment goes until the end of the line
@@ -61,30 +65,35 @@ impl Scanner {
                         self.move_next();
                     }
                 }
-                false => self.add_token(TokenKind::Slash),
+                false => self.add_token(TokenKind::Slash, None),
             },
-            '(' => self.add_token(TokenKind::LeftParen),
-            ')' => self.add_token(TokenKind::RightParen),
-            '{' => self.add_token(TokenKind::LeftBrace),
-            '}' => self.add_token(TokenKind::RightBrace),
-            ',' => self.add_token(TokenKind::Comma),
-            '.' => self.add_token(TokenKind::Dot),
+            '(' => self.add_token(TokenKind::LeftParen, None),
+            ')' => self.add_token(TokenKind::RightParen, None),
+            '{' => self.add_token(TokenKind::LeftBrace, None),
+            '}' => self.add_token(TokenKind::RightBrace, None),
+            ',' => self.add_token(TokenKind::Comma, None),
+            '.' => self.add_token(TokenKind::Dot, None),
             '!' => match self.peek_match('=') {
-                true => self.add_token(TokenKind::BangEqual),
-                false => self.add_token(TokenKind::Bang),
+                true => self.add_token(TokenKind::BangEqual, None),
+                false => self.add_token(TokenKind::Bang, None),
             },
             '>' => match self.peek_match('=') {
-                true => self.add_token(TokenKind::GreaterEqual),
-                false => self.add_token(TokenKind::Greater),
+                true => self.add_token(TokenKind::GreaterEqual, None),
+                false => self.add_token(TokenKind::Greater, None),
             },
             '<' => match self.peek_match('=') {
-                true => self.add_token(TokenKind::LessEqual),
-                false => self.add_token(TokenKind::Less),
+                true => self.add_token(TokenKind::LessEqual, None),
+                false => self.add_token(TokenKind::Less, None),
             },
             '=' => match self.peek_match('=') {
-                true => self.add_token(TokenKind::EqualEqual),
-                false => self.add_token(TokenKind::Equal),
+                true => self.add_token(TokenKind::EqualEqual, None),
+                false => self.add_token(TokenKind::Equal, None),
             },
+            ' ' => {}
+            '\r' => {}
+            '\t' => {}
+            '\n' => self.line += 1, // move line
+            '"' => self.handle_string_literal(),
             _ => self.print_error("unexpected character"),
         }
     }
@@ -99,23 +108,36 @@ impl Scanner {
     /// this method will peek the current char but NOT consume the token => Lookahead.
     fn peek(&self) -> char {
         if self.is_at_the_end() {
-            '\0'
+            '\0';
         }
         self.source[self.current..].chars().next().unwrap()
     }
 
-    /// this method will get the current character of the source
-    fn get_current(&self) -> char {
-        self.source.chars().nth(self.current).unwrap()
-    }
-
     /// peek match will check if the given `char` is the same as the next one then return true and update the position, otherwise false
     fn peek_match(&mut self, next: char) -> bool {
-        if self.is_at_the_end() || self.get_current() != next {
+        if self.is_at_the_end() || self.peek() != next {
             false;
         }
         self.current += 1;
         true
+    }
+
+    fn handle_string_literal(&mut self) {
+        while self.peek() != '"' && !self.is_at_the_end() {
+            if self.peek() == '\n' {
+                self.line += 1;
+            }
+            self.move_next();
+        }
+        if self.is_at_the_end() {
+            self.print_error("Unterminated string literal");
+        }
+
+        self.move_next(); // the closing " of the string literal
+
+        // Trim the surrounding quotes
+        let value = self.source[(self.start + 1)..(self.current + 1)].to_string();
+        self.add_token(TokenKind::String, Some(value))
     }
 
     /// helper method to generate a string with a comprehensive log error message for the user
