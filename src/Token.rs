@@ -53,13 +53,7 @@ pub struct Token {
     column: usize,   // column where token starts
     length: usize,   // size of the lexeme
 }
-#[derive(Clone)]
-pub struct SlimToken {
-    // 16 bytes (usize) + 1 byte (enum)
-    kind: TokenKind,
-    offset: usize,
-    length: usize,
-}
+
 impl Token {
     pub fn new(value: String, kind: TokenKind, line: usize, column: usize) -> Self {
         let length = value.len();
@@ -73,6 +67,13 @@ impl Token {
     }
 }
 
+#[derive(Clone)]
+pub struct SlimToken {
+    // 16 bytes (usize) + 1 byte (enum)
+    kind: TokenKind,
+    offset: usize,
+    length: usize,
+}
 impl SlimToken {
     pub fn new(kind: TokenKind, offset: usize, length: usize) -> Self {
         SlimToken {
