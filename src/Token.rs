@@ -1,29 +1,88 @@
 #[derive(Clone)]
 pub enum TokenKind {
-    String,     // strings
-    Float,      // lox only uses floating point numbers
-    Keyword,    //
-    Operator,   // operators +=-()...
-    Identifier, //
-    EOF         // End of file
+    // single-character tokens
+    LeftParen,
+    RightParen,
+    LeftBrace,
+    RightBrace,
+    Comma,
+    Dot,
+    Minus,
+    Plus,
+    Semicolon,
+    Slash,
+    Star,
+    // one-two character tokens
+    Bang,
+    BangEqual,
+    Equal,
+    EqualEqual,
+    Greater,
+    GreaterEqual,
+    Less,
+    LessEqual,
+    // literals
+    Identifier,
+    String,
+    Number,
+    // Keywords
+    And,
+    Class,
+    Else,
+    False,
+    Fun,
+    For,
+    If,
+    Print,
+    Return,
+    Or,
+    Nil,
+    Super,
+    This,
+    True,
+    Var,
+    While,
+    Eof,
 }
 #[derive(Clone)]
 pub struct Token {
-    value: String,      // lexeme
-    kind: TokenKind,    // type of the token
-    line: usize,        // where token appears
-    position: usize,    // absolute position in the source
-    column: usize,      // column where token starts
+    // size = 24 bytes (usize) + 1 byte (enum) +  variable size string
+    value: String,   // lexeme
+    kind: TokenKind, // type of the token
+    line: usize,     // where token appears
+    column: usize,   // column where token starts
+    length: usize,   // size of the lexeme
 }
-
+#[derive(Clone)]
+pub struct SlimToken {
+    // 16 bytes (usize) + 1 byte (enum)
+    kind: TokenKind,
+    offset: usize,
+    length: usize,
+}
 impl Token {
-    pub fn new(value: String, kind: TokenKind, line: usize, position: usize, column: usize) -> Self {
+    pub fn new(value: String, kind: TokenKind, line: usize, column: usize) -> Self {
+        let length = value.len();
         Token {
             value,
             kind,
             line,
-            position,
             column,
+            length,
         }
+    }
+}
+
+impl SlimToken {
+    pub fn new(kind: TokenKind, offset: usize, length: usize) -> Self {
+        SlimToken {
+            kind,
+            offset, // offset from the beginning of the source to the beginning of the lexeme
+            length, // length of the lexeme
+        }
+    }
+    /// Get the full lexeme to prevent space-allocation of the line, column, value;
+    pub fn get_lexeme<'a>(&self, source: &'a str) -> &'a str {
+        &source[self.offset..self.offset + self.length]
     }
 }

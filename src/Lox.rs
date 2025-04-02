@@ -15,6 +15,8 @@ impl Lox {
         Ok(())
     }
 }
+
+/// run file which contains .lox source code
 fn run_file<P: AsRef<Path>>(lox: &mut Lox, path: P) -> io::Result<()> {
     let content = std::fs::read_to_string(path);
     for line in content?.lines() {
@@ -24,7 +26,7 @@ fn run_file<P: AsRef<Path>>(lox: &mut Lox, path: P) -> io::Result<()> {
     }
     Ok(())
 }
-
+/// run a single prompt from the interactive shell
 fn run_prompt(lox: &mut Lox) -> io::Result<()> {
     let stdin = io::stdin();
     let mut buffer = String::new();

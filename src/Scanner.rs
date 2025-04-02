@@ -1,6 +1,6 @@
 use crate::Token::{Token, TokenKind};
-use std::io;
-struct Scanner {
+
+pub struct Scanner {
     source: String,
     tokens: Vec<Token>,
     start: usize,   // start of the current lexeme
@@ -41,9 +41,8 @@ impl Scanner {
         // push EOF token to the vector
         self.tokens.push(Token::new(
             String::from("EOF"),
-            TokenKind::EOF,
+            TokenKind::Eof,
             self.line,
-            self.start,
             self.column,
         ));
 
@@ -56,9 +55,21 @@ impl Scanner {
             value.to_string(),
             kind,
             self.line,
-            self.start,
             self.column,
         ));
     }
     fn scan_token(&mut self) {}
+    fn error_details(&self, message: &str) -> String {
+        let line_content = self.source.lines().nth(self.line - 1).unwrap_or("");
+        let mut indicator = " ".repeat(self.column) + "^"; // Create a pointer to show the error pos
+
+        format!(
+            "Error on line {}, column {}:\n{}\n{}\n{}",
+            self.line, self.column, line_content, indicator, message
+        )
+    }
+    pub fn had_error(&self) -> Option<String> {
+        // or None
+        Some(self.error_details(&self.source))
+    }
 }
