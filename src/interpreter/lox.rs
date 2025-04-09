@@ -1,13 +1,14 @@
 // Scanning Part one
+use crate::error::{Error, ErrorKind};
 use std::io;
 use std::io::Write;
 use std::path::Path;
 
 // Core interpreter functionality
-struct Lox {}
+pub struct Lox {}
 
 impl Lox {
-    fn new() -> Self {
+    pub fn new() -> Self {
         Lox {}
     }
     /// Core execution method
@@ -21,7 +22,9 @@ fn run_file<P: AsRef<Path>>(lox: &mut Lox, path: P) -> io::Result<()> {
     let content = std::fs::read_to_string(path);
     for line in content?.lines() {
         if let Err(e) = lox.run(&line) {
-            eprintln!("Error {}", e);
+            // dummy
+            let error = Error::new(ErrorKind::Runtime, "Error in parsing", 1, 1);
+            error.print_error(&e);
         }
     }
     Ok(())
@@ -42,7 +45,9 @@ fn run_prompt(lox: &mut Lox) -> io::Result<()> {
         }
 
         if let Err(e) = lox.run(&buffer) {
-            eprintln!("Error {}", e);
+            //dummy
+            let error = Error::new(ErrorKind::Runtime, "Error in parsing", 1, 1);
+            error.print_error(&e);
         }
     }
     Ok(())

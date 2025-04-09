@@ -1,50 +1,19 @@
-#[derive(Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum TokenKind {
     // single-character tokens
-    LeftParen,
-    RightParen,
-    LeftBrace,
-    RightBrace,
-    Comma,
-    Dot,
-    Minus,
-    Plus,
-    Semicolon,
-    Slash,
-    Star,
+    LeftParen, RightParen, LeftBrace, RightBrace, Comma,
+    Dot, Minus, Plus, Semicolon, Slash, Star,
     // one-two character tokens
-    Bang,
-    BangEqual,
-    Equal,
-    EqualEqual,
-    Greater,
-    GreaterEqual,
-    Less,
-    LessEqual,
+    Bang, BangEqual, Equal, EqualEqual,
+    Greater, GreaterEqual, Less, LessEqual,
     // literals
-    Identifier,
-    String,
-    Number,
+    Identifier, String, Number,
     // Keywords
-    And,
-    Class,
-    Else,
-    False,
-    Fun,
-    For,
-    If,
-    Print,
-    Return,
-    Or,
-    Nil,
-    Super,
-    This,
-    True,
-    Var,
-    While,
+    And, Class, Else, False, Fun, For, If, Print,
+    Return, Or, Nil, Super, This, True, Var, While,
     Eof,
 }
-#[derive(Clone)]
+#[derive(Debug, Clone)]
 pub struct Token {
     // size = 24 bytes (usize) + 1 byte (enum) +  variable size string
     value: String,   // lexeme
@@ -67,7 +36,7 @@ impl Token {
     }
 }
 
-#[derive(Clone)]
+#[derive(Debug, Clone)]
 pub struct SlimToken {
     // 16 bytes (usize) + 1 byte (enum)
     kind: TokenKind,
