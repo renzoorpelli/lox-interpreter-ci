@@ -17,8 +17,7 @@ pub struct Error {
 }
 
 impl Error {
-
-    // TODO: enchance api
+    // TODO: enhance api
     pub fn new(kind: ErrorKind, message: &str, line: usize, column: usize) -> Error {
         Error {
             kind,
@@ -34,7 +33,7 @@ impl Error {
             self.kind, self.line, self.column, self.message, source_line, indicator
         )
     }
-    pub fn print_error(&self, source_line: &str) {
+    pub fn print(&self, source_line: &str) {
         let err = self.report(source_line);
         eprintln!("{}", err);
         exit(65)

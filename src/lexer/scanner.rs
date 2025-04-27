@@ -224,6 +224,8 @@ impl Scanner {
 
         self.add_token(token_kind, None);
     }
+
+    /// useful wrappers
     fn is_alphanumeric(c: char) -> bool {
         c.is_alphanumeric() || c == '_'
     }
