@@ -129,9 +129,8 @@ impl Expr {
             },
 
             Expr::Unary { operator, right } => match notation {
-                Notation::Lisp => format!("({} {})", operator.value, right.print(notation)),
-                Notation::Polish => format!("{} {}", operator.value, right.print(notation)),
                 Notation::Rpn => format!("{} {}", right.print(notation), operator.value),
+                _ => format!("({} {})", operator.value, right.print(notation)),
             },
 
             Expr::Binary {
