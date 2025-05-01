@@ -17,11 +17,11 @@ impl Value {
     }
 
     /// function to make arithmetic operations only if values are numbers
-    pub fn binary_number_operation<F>(l: &Value, r: &Value, op: F) -> Result<Value>
+    pub fn binary_number_operation<F>(left: &Value, right: &Value, op: F) -> Result<Value>
     where
         F: FnOnce(f64, f64) -> f64,
     {
-        if let (Value::Number(l), Value::Number(r)) = (l, r) {
+        if let (Value::Number(l), Value::Number(r)) = (left, right) {
             Ok(Value::Number(op(*l, *r)))
         } else {
             Err(Error::new(
