@@ -1,4 +1,4 @@
 pub mod parser;
-mod expr;
+pub mod expr;
 mod ast;
 mod value;

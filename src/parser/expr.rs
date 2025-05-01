@@ -1,5 +1,3 @@
-use std::fmt::format;
-
 use crate::error::{Error, ErrorKind, Result};
 use crate::parser::value::Value;
 use crate::token::{Token, TokenKind};
