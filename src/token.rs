@@ -36,23 +36,23 @@ impl Token {
     }
 }
 
-#[derive(Debug, Clone)]
-pub struct SlimToken {
-    // 16 bytes (usize) + 1 byte (enum)
-    kind: TokenKind,
-    offset: usize,
-    length: usize,
-}
-impl SlimToken {
-    pub fn new(kind: TokenKind, offset: usize, length: usize) -> Self {
-        SlimToken {
-            kind,
-            offset, // offset from the beginning of the source to the beginning of the lexeme
-            length, // length of the lexeme
-        }
-    }
-    /// Get the full lexeme to prevent space-allocation of the line, column, value;
-    pub fn get_lexeme<'a>(&self, source: &'a str) -> &'a str {
-        &source[self.offset..self.offset + self.length]
-    }
-}
+// #[derive(Debug, Clone)]
+// pub struct SlimToken {
+//     // 16 bytes (usize) + 1 byte (enum)
+//     kind: TokenKind,
+//     offset: usize,
+//     length: usize,
+// }
+// impl SlimToken {
+//     pub fn new(kind: TokenKind, offset: usize, length: usize) -> Self {
+//         SlimToken {
+//             kind,
+//             offset, // offset from the beginning of the source to the beginning of the lexeme
+//             length, // length of the lexeme
+//         }
+//     }
+//     /// Get the full lexeme to prevent space-allocation of the line, column, value;
+//     pub fn get_lexeme<'a>(&self, source: &'a str) -> &'a str {
+//         &source[self.offset..self.offset + self.length]
+//     }
+// }

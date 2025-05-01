@@ -1,5 +1,6 @@
 use crate::error::{Error, ErrorKind, Result};
 
+/// separation of concerns 
 #[derive(Debug, Clone)]
 pub enum Value {
     Number(f64),

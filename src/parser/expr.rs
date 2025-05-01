@@ -1,15 +1,16 @@
+use std::fmt::format;
+
 use crate::error::{Error, ErrorKind, Result};
 use crate::parser::value::Value;
 use crate::token::{Token, TokenKind};
 
 /*
-   expression = literal | unary | binary | grouping
-   literal = NUMBER | STRING | "true" | "false" | "nill" ;
+   expression = literal | unary | binary | grouping;
+   literal = NUMBER | STRING | "true" | "false" | "nill";
    grouping = "(" expression ")";
    unary = ( "-" | "|" ) expression;
    binary = expression operator expression;
-   operator = "==" | "!=" | "<" | "<=" | ">" | ">=" | "+" | "-"
-   | "*" | "/" ;
+   operator = "==" | "!=" | "<" | "<=" | ">" | ">=" | "+" | "-" | "*" | "/";
 */
 
 // Box<Expr> provide known size at compile time
@@ -104,6 +105,26 @@ impl Expr {
                 0,
                 0,
             )),
+        }
+    }
+
+    pub fn print(&self) -> String {
+        match self {
+            Expr::Literal(lit) => match lit {
+                Literal::Number(n) => n.to_string(),
+                Literal::String(s) => format!("\"{}\"", s),
+                Literal::Bool(b) => b.to_string(),
+                Literal::Nil => "nil".into(),
+            },
+            Expr::Grouping { expr } => format!("(group {})", expr.print()),
+            Expr::Unary { operator, right } => format!("({} {})", operator.value, right.print()),
+            Expr::Binary {
+                left,
+                operator,
+                right,
+            } => {
+                format!("({} {} {})", operator.value, left.print(), right.print())
+            }
         }
     }
 }
