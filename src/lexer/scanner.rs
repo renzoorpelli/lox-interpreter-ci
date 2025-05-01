@@ -69,13 +69,13 @@ impl Scanner {
         Ok(self.tokens.clone())
     }
 
-    fn add_token(&mut self, kind: TokenKind, value: Option<String>) {
+    fn add_token(&mut self, TokenKind: TokenKind, value: Option<String>) {
         let lexeme = match value {
             Some(value) => value,
             None => self.source[self.start..self.current].to_string(),
         };
         self.tokens
-            .push(Token::new(lexeme, kind, self.line, self.column));
+            .push(Token::new(lexeme, TokenKind, self.line, self.column));
     }
 
     fn scan_token(&mut self) -> Result<()> {

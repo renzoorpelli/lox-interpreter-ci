@@ -16,8 +16,8 @@ pub enum TokenKind {
 #[derive(Debug, Clone)]
 pub struct Token {
     // size = 24 bytes (usize) + 1 byte (enum) +  variable size string
-    value: String,   // lexeme
-    kind: TokenKind, // type of the token
+    pub value: String,   // lexeme
+    pub kind: TokenKind, // type of the token
     line: usize,     // where token appears
     column: usize,   // column where token starts
     length: usize,   // size of the lexeme

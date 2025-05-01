@@ -1,4 +1,3 @@
-use std::fmt;
 use std::process::exit;
 
 #[derive(Debug)]
@@ -17,7 +16,7 @@ pub struct Error {
 }
 
 impl Error {
-    // TODO: enhance api
+    // TODO: enhance API
     pub fn new(kind: ErrorKind, message: &str, line: usize, column: usize) -> Error {
         Error {
             kind,
