@@ -35,6 +35,14 @@ pub enum Literal {
     Bool(bool),
     Nil,
 }
+
+#[derive(Clone, Copy)] // -> pass by value to multuple functions
+pub enum Notation {
+    Lisp,
+    Rpn,
+    Polish,
+}
+
 impl Expr {
     pub fn evaluate(&self) -> Result<Value> {
         match self {
@@ -106,7 +114,7 @@ impl Expr {
         }
     }
 
-    pub fn print(&self) -> String {
+    pub fn print(&self, notation: Notation) -> String {
         match self {
             Expr::Literal(lit) => match lit {
                 Literal::Number(n) => n.to_string(),
@@ -114,15 +122,42 @@ impl Expr {
                 Literal::Bool(b) => b.to_string(),
                 Literal::Nil => "nil".into(),
             },
-            Expr::Grouping { expr } => format!("(group {})", expr.print()),
-            Expr::Unary { operator, right } => format!("({} {})", operator.value, right.print()),
+
+            Expr::Grouping { expr } => match notation {
+                Notation::Lisp => format!("(group {})", expr.print(notation)),
+                _ => expr.print(notation),
+            },
+
+            Expr::Unary { operator, right } => match notation {
+                Notation::Lisp => format!("({} {})", operator.value, right.print(notation)),
+                Notation::Polish => format!("{} {}", operator.value, right.print(notation)),
+                Notation::Rpn => format!("{} {}", right.print(notation), operator.value),
+            },
+
             Expr::Binary {
                 left,
                 operator,
                 right,
-            } => {
-                format!("({} {} {})", operator.value, left.print(), right.print())
-            }
+            } => match notation {
+                Notation::Lisp => format!(
+                    "({} {} {})",
+                    operator.value,
+                    left.print(notation),
+                    right.print(notation)
+                ),
+                Notation::Polish => format!(
+                    "{} {} {}",
+                    operator.value,
+                    left.print(notation),
+                    right.print(notation)
+                ),
+                Notation::Rpn => format!(
+                    "{} {} {}",
+                    left.print(notation),
+                    right.print(notation),
+                    operator.value
+                ),
+            },
         }
     }
 }
