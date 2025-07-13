@@ -1,4 +1,5 @@
-use crate::error::{Error, ErrorKind, Result};
+use crate::error;
+use crate::error::{Error, ErrorKind, Position};
 use crate::token::{Token, TokenKind};
 use lazy_static::lazy_static;
 use std::collections::HashMap;
@@ -45,13 +46,13 @@ impl Scanner {
             column,
         }
     }
-    /// method used to check all the characters were consumed
+    /// Method used to check all the characters were consumed
     fn is_at_the_end(&self) -> bool {
         self.current >= self.source.len()
     }
 
-    /// this method will scan the source code and return all the tokens
-    pub fn get_tokens(&mut self) -> Result<Vec<Token>> {
+    /// Method used to scan the source code and return all the tokens
+    pub fn get_tokens(&mut self) -> Result<Vec<Token>, Error> {
         while !self.is_at_the_end() {
             self.start = self.current;
             match self.scan_token() {
@@ -65,20 +66,21 @@ impl Scanner {
             TokenKind::Eof,
             self.line,
             self.column,
+            self.start,
         ));
         Ok(self.tokens.clone())
     }
 
-    fn add_token(&mut self, TokenKind: TokenKind, value: Option<String>) {
+    fn add_token(&mut self, token_kind: TokenKind, value: Option<String>) {
         let lexeme = match value {
             Some(value) => value,
             None => self.source[self.start..self.current].to_string(),
         };
         self.tokens
-            .push(Token::new(lexeme, TokenKind, self.line, self.column));
+            .push(Token::new(lexeme, token_kind, self.line, self.column, self.start));
     }
 
-    fn scan_token(&mut self) -> Result<()> {
+    fn scan_token(&mut self) -> Result<(), Error> {
         match self.advance() {
             '+' => self.add_token(TokenKind::Plus, None),
             '-' => self.add_token(TokenKind::Minus, None),
@@ -130,12 +132,11 @@ impl Scanner {
                 } else if self.peek().is_ascii_alphabetic() {
                     self.handle_identifier();
                 }
-                Error::new(
-                    ErrorKind::Parse,
+
+                return Err(Error::parse(
                     "Unexpected character.",
-                    self.line,
-                    self.column,
-                );
+                    Position::new(self.line, self.column, self.current),
+                ));
             }
         }
         Ok(())
@@ -191,7 +192,7 @@ impl Scanner {
     }
 
     /// this method will iterate through the lexeme, then it will parse the lexeme to find a string-token
-    fn handle_string_literal(&mut self) -> Result<()> {
+    fn handle_string_literal(&mut self) -> Result<(), Error> {
         while self.peek() != '"' && !self.is_at_the_end() {
             if self.peek() == '\n' {
                 self.line += 1;
@@ -199,12 +200,10 @@ impl Scanner {
             self.advance();
         }
         if self.is_at_the_end() {
-            Error::new(
-                ErrorKind::Syntax,
+            return Err(Error::syntax(
                 "Unterminated string literal",
-                self.line,
-                self.column,
-            );
+                Position::new(self.line, self.column, self.current),
+            ));
         }
         self.advance(); // the closing " of the string literal
         // Trim the surrounding quotes

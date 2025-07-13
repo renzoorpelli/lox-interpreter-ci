@@ -22,9 +22,10 @@ fn run_file<P: AsRef<Path>>(lox: &mut Lox, path: P) -> io::Result<()> {
     let content = std::fs::read_to_string(path);
     for line in content?.lines() {
         if let Err(e) = lox.run(&line) {
-            // dummy
-            let error = Error::new(ErrorKind::Runtime, "Error in parsing", 1, 1);
-            error.print(&e);
+            // // dummy
+            //
+            // let error = Error::new(ErrorKind::Runtime, "Error in parsing", 1, 1);
+            // error.print(&e);
         }
     }
     Ok(())
@@ -45,9 +46,9 @@ fn run_prompt(lox: &mut Lox) -> io::Result<()> {
         }
 
         if let Err(e) = lox.run(&buffer) {
-            //dummy
-            let error = Error::new(ErrorKind::Runtime, "Error in parsing", 1, 1);
-            error.print(&e);
+            // //dummy
+            // let error = Error::new(ErrorKind::Runtime, "Error in parsing", 1, 1);
+            // error.print(&e);
         }
     }
     Ok(())

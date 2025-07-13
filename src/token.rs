@@ -1,42 +1,77 @@
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub enum TokenKind {
     // single-character tokens
-    LeftParen, RightParen, LeftBrace, RightBrace, Comma,
-    Dot, Minus, Plus, Semicolon, Slash, Star,
+    LeftParen,
+    RightParen,
+    LeftBrace,
+    RightBrace,
+    Comma,
+    Dot,
+    Minus,
+    Plus,
+    Semicolon,
+    Slash,
+    Star,
+    Colon,
+    Question,
     // one-two character tokens
-    Bang, BangEqual, Equal, EqualEqual,
-    Greater, GreaterEqual, Less, LessEqual,
+    Bang,
+    BangEqual,
+    Equal,
+    EqualEqual,
+    Greater,
+    GreaterEqual,
+    Less,
+    LessEqual,
     // literals
-    Identifier, String, Number,
+    Identifier,
+    String,
+    Number,
     // Keywords
-    And, Class, Else, False, Fun, For, If, Print,
-    Return, Or, Nil, Super, This, True, Var, While,
+    And,
+    Class,
+    Else,
+    False,
+    Fun,
+    For,
+    If,
+    Print,
+    Return,
+    Or,
+    Nil,
+    Super,
+    This,
+    True,
+    Var,
+    While,
     Eof,
 }
 #[derive(Debug, Clone)]
 pub struct Token {
     // size = 24 bytes (usize) + 1 byte (enum) +  variable size string
-    pub value: String,   // lexeme
-    pub kind: TokenKind, // type of the token
-    line: usize,     // where token appears
-    column: usize,   // column where token starts
-    length: usize,   // size of the lexeme
+    pub lexeme: String,
+    pub kind: TokenKind,     // type of the token
+    pub line: usize,         // where token appears
+    pub column: usize,       // column where token starts
+    pub length: usize,       // size of the lexeme
+    pub offset: usize,
 }
 
 impl Token {
-    pub fn new(value: String, kind: TokenKind, line: usize, column: usize) -> Self {
-        let length = value.len();
+    pub fn new(lexeme: String, kind: TokenKind, line: usize, column: usize, offset: usize) -> Self {
+        let length = lexeme.len();
         Token {
-            value,
+            lexeme,
             kind,
             line,
             column,
             length,
+            offset
         }
     }
 }
 
-// #[derive(Debug, Clone)]
+// #[derive(Debug, Clone)] # experimentald DOD
 // pub struct SlimToken {
 //     // 16 bytes (usize) + 1 byte (enum)
 //     kind: TokenKind,

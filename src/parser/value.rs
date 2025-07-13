@@ -1,6 +1,6 @@
-use crate::error::{Error, ErrorKind, Result};
+use crate::error::{Error, ErrorKind, Position};
 
-/// separation of concerns 
+/// separation of concerns
 #[derive(Debug, Clone)]
 pub enum Value {
     Number(f64),
@@ -17,19 +17,28 @@ impl Value {
         }
     }
 
+    pub fn type_name(&self) -> &'static str {
+        match self {
+            Value::Number(_) => "number",
+            Value::String(_) => "string",
+            Value::Bool(_) => "boolean",
+            Value::Nil => "nil",
+        }
+    }
+
     /// function to make arithmetic operations only if values are numbers
-    pub fn binary_number_operation<F>(left: &Value, right: &Value, op: F) -> Result<Value>
+    pub fn binary_number_operation<F>(left: &Value, right: &Value, op: F, position: Position) -> Result<Value, Error>
     where
         F: FnOnce(f64, f64) -> f64,
     {
         if let (Value::Number(l), Value::Number(r)) = (left, right) {
             Ok(Value::Number(op(*l, *r)))
         } else {
-            Err(Error::new(
-                ErrorKind::Runtime,
+            Err(Error::invalid_operand_types(
                 "Operands must be numbers.",
-                0,
-                0,
+                left.type_name(),
+                right.type_name(),
+                position,
             ))
         }
     }
